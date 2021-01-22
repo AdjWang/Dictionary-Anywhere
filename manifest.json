@@ -31,10 +31,7 @@
   ],
 
   "background": {
-    "scripts": [
-      "common/browser-polyfill.js",
-      "background/background.js"
-    ],
+    "page": "background/bgpage.html",
     "persistent": false
   },
 
