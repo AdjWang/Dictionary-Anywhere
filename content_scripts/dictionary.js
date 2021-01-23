@@ -98,7 +98,7 @@
         heading.style = "margin-block-end: 0px; display:inline-block;";
         heading.textContent = "Searching";
 
-        var meaning = document.createElement("p");
+        var meaning = document.createElement("div");
         meaning.style = "margin-top: 10px";
         meaning.textContent = "Please Wait...";
 
@@ -108,7 +108,8 @@
         audio.style.display = "none";
 
         var moreInfo =document.createElement("a");
-        moreInfo.href = `https://www.google.com/search?hl=${LANGUAGE}&q=define+${info.word}`;
+        // moreInfo.href = `https://www.google.com/search?hl=${LANGUAGE}&q=define+${info.word}`;
+        moreInfo.href = `https://www.bing.com/dict/search?q=${info.word}`;
         moreInfo.style = "float: right; text-decoration: none;"
         moreInfo.target = "_blank";
 
@@ -154,7 +155,7 @@
 
         var heightBefore = popupDiv.clientHeight;
         createdDiv.heading.textContent = content.word;
-        createdDiv.meaning.textContent = content.meaning;
+        createdDiv.meaning.innerHTML = content.meaning;
         createdDiv.moreInfo.textContent = "More »";
 
         var heightAfter = popupDiv.clientHeight;
