@@ -1,50 +1,32 @@
-
 const DEFAULT_HISTORY_SETTING = {
     enabled: true
 };
 
-export function onMessageListener(request, sender, sendResponse) {
-    const {
-        word,
-        lang
-    } = request,
-    url = `https://api.dictionaryapi.dev/api/v2/entries/${lang}/${word}`;
-
-    fetch(url, {
-            method: 'GET',
-            credentials: 'omit',
-        })
-        .then((response) => response.text())
-        .then((text) => {
-                content = extractMeaning(text, {
-                    word,
-                    lang
-                });
-
-            sendResponse({
-                content
-            });
-
-            content && browser.storage.local.get().then((results) => {
-                let history = results.history || DEFAULT_HISTORY_SETTING;
-
-                history.enabled && saveWord(content)
-            });
-        })
-
-    return true;
+export async function onMessageListener(request, sender, sendResponse) {
+    const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/${request.lang}/${request.word}`, {
+        method: 'GET',
+        credentials: 'omit',
+    });
+    const text = await response.text();
+    var content = extractMeaning(text);
+    
+    content && browser.storage.local.get().then((results) => {
+        let history = results.history || DEFAULT_HISTORY_SETTING;
+        history.enabled && saveWord(content);
+    });
+    return {content};
 }
 
-function extractMeaning(text, word_obj) {
+function extractMeaning(text) {
     var result = JSON.parse(text);
-    if(!result.length){
+    if (!result.length) {
         return {
             word: result.title,
             meaning: result.message,
             audioSrc: ""
         };
     }
-    result = result[0];     // get the content of the json result
+    result = result[0]; // get the content of the json result
 
     var meaning = document.createElement("div");
     result.meanings.forEach((part_of_speech) => {
@@ -67,18 +49,18 @@ function extractMeaning(text, word_obj) {
 };
 
 
-function saveWord (content) {
+function saveWord(content) {
     let word = content.word,
         meaning = content.meaning,
-      
+
         storageItem = browser.storage.local.get('definitions');
 
-        storageItem.then((results) => {
-            let definitions = results.definitions || {};
+    storageItem.then((results) => {
+        let definitions = results.definitions || {};
 
-            definitions[word] = meaning;
-            browser.storage.local.set({
-                definitions
-            });
-        })
+        definitions[word] = meaning;
+        browser.storage.local.set({
+            definitions
+        });
+    })
 }
